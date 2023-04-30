@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>XML Comment Extractor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+
+
+    <style>
+        #com,
+        #ii,
+        #defects {
+            height: 200px;
+            /* Set a fixed height of 200 pixels */
+            overflow: auto;
+            /* Show scrollbar when content overflows */
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .dragging {
+            background-color: #f7f7f7;
+        }
+
+        .file-upload-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .comment {
+            background-color: #0dcaf00a;
+            border: dashed 1px #e7dcdc;
+            padding: 3px;
+            margin: 3px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+
+
+
+        <div class="row">
+            <div id="a" class="col-md-12">
+
+                <h3>Upload files here</h3>
+                <div class="drop-zone">
+                    <img src="https://cdn.icon-icons.com/icons2/1875/PNG/512/fileupload_120150.png"
+                        alt="file upload icon" class="file-upload-icon">
+                    <p>Drag your XML files here or click to browse</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div id="b" class="card m-3 col-md-6">
+
+                <h5>Components</h5>
+                <!-- <button id="next_comment" class="btn btn-primary">Next</button> -->
+                <div id="com">
+
+                </div>
+            </div>
+
+            <div id="ai" class="card m-3 col-md-5">
+                <h5>Defects</h5>
+                <!-- <button id="next_defect" class="btn btn-danger">Next</button> -->
+                <div id="defects">
+
+                </div>
+
+            </div>
+
+            <div id="inno" class="card  m-3 col-md-6">
+                <h5>II ?</h5>
+                <!-- <button id="next_defect" class="btn btn-danger">Next</button> -->
+                <div id="ii">
+
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+
+    <script>
+
+
+        $(document).ready(function () {
+
+
+
+            $('.drop-zone').on('dragover', function (event) {
+                event.preventDefault();
+                $(this).addClass('dragging');
+            });
+
+            $('.drop-zone').on('dragleave', function (event) {
+                event.preventDefault();
+                $(this).removeClass('dragging');
+            });
+
+            $('.drop-zone').on('drop', function (event) {
+                event.preventDefault();
+                $(this).removeClass('dragging');
+                var files = event.originalEvent.dataTransfer.files;
+                //for (var i = 0; i < files.length; i++) {
+                //#defects icine st icinde gecen kardeşlerdenstkey baslik stVal deger olacak sekilde bas
+                i = 0
+                //processFile(files[i], 'st', 'stKey', 'stVal', '#defects');
+                processFile(files[i], 'st', 'stKey', 'stVal', '#defects');
+
+                processFile(files[i], 'com', 'comName', 'comText', '#com');
+                processFile(files[i], 'ii', 'iiText', 'iiHelp', '#ii');
+
+                //}
+            });
+
+            function processFile(file, parentXML, childXMLsiblings1, childXMLsiblings2, targetHoldertoPopulate) {
+                var comments = {};
+                var reader = new FileReader();
+                console.log("Processing file " + targetHoldertoPopulate)
+                reader.onload = function () {
+                    var xmlDoc = $.parseXML(reader.result);
+                    var $xml = $(xmlDoc);
+                    $xml.find(parentXML).each(function () {
+                        var $st = $(this);
+                        var key = $st.find(childXMLsiblings1).html();
+                        var vals = $st.find(childXMLsiblings2);
+                        var comment = '';
+                        vals.each(function () {
+                            comment += $(this).text() + ' ';
+
+                        });
+                        comments[key] = comment;
+                    });
+                    // Yazdır
+
+                    $(targetHoldertoPopulate).empty();
+                    $.each(comments, function (key, comment) {
+                        var $div = $('<div class="comment">');
+                        var $h4 = $('<h4>').html(key);
+                        var $p = $('<p>').html(comment);
+                        $div.append($h4).append($p);
+                        $(targetHoldertoPopulate).append($div);
+
+                    });
+
+
+                    //yazdırma
+                };
+                reader.readAsText(file);
+            }
+
+
+
+
+
+
+        });
+    </script>
+
+
+
+</body>
+
+</html>
